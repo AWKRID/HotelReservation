@@ -1,6 +1,7 @@
 package org.example
 
 fun main() {
-    val hotel = Hotel()
-    hotel.runProgram()
+    val firstHotel = Hotel("Minsu")
+    val firstHotelManager = HotelReservationManager(firstHotel)
+    firstHotelManager.runProgram()
 }

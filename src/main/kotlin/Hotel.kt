@@ -1,38 +1,25 @@
 package org.example
 
-class Hotel {
+import java.time.LocalDate
+
+class Hotel(private val name: String) {
     private var reservationList = mutableListOf<Reservation>()
+    fun getName(): String {
+        return name
+    }
 
-    private fun book() {
-        val reservation = Reservation()
-        reservation.makeReservation()
+    fun book(reservation: Reservation) {
         reservationList.add(reservation)
-        println("호텔 예약이 완료되었습니다.")
-    }
-    fun runProgram(){
-        while(true){
-            printMenu()
-            try{
-                getUserChoice()
-            }catch(e:Exception){
-                break
-            }
-        }
-    }
-    private fun printMenu() {
-        println("호텔예약 프로그램입니다.")
-        println("[메뉴]")
-        println("1. 방 예약, 2. 예약 목록 출력, 3. 예약목록 정렬 출력, 4. 시스템 종료, 5. 금액 입출금 내역 확인, 6. 예약 변경/취소")
     }
 
-    private fun showReservations() {
+    fun showReservations() {
         for (idx in reservationList.indices) {
             print("${idx + 1}. ")
             reservationList[idx].showInfo()
         }
     }
 
-    private fun showSortedReservations() {
+    fun showSortedReservations() {
         val sortedReservationList = reservationList
         sortedReservationList.sortBy { it.getCheckInDate() }
         for (idx in sortedReservationList.indices) {
@@ -41,13 +28,19 @@ class Hotel {
         }
     }
 
-    private fun getUserChoice() {
-        val userChoice = readln()
-        when (userChoice) {
-            "1" -> book()
-            "2" -> showReservations()
-            "3" -> showSortedReservations()
-            "4" -> throw Exception()
+
+    fun isAvailabile(roomNumber: Int, checkInDate: String, checkOutDate: String): Boolean {
+        val filteredReservationList = reservationList.filter {
+            it.getRoomNumber() == roomNumber && (isDateBetweenTwoDates(checkInDate, it.getCheckInDate(),it.getCheckOutDate()) ||
+                    isDateBetweenTwoDates(checkOutDate, it.getCheckInDate(),it.getCheckOutDate()))
+
         }
+        return filteredReservationList.isEmpty()
     }
+
+    private fun isDateBetweenTwoDates(date : String, startDate: String, endDate: String): Boolean {
+        return LocalDate.parse(date).isAfter(LocalDate.parse(startDate).minusDays(1)) &&
+                LocalDate.parse(date).isBefore(LocalDate.parse(endDate))
+    }
+
 }
