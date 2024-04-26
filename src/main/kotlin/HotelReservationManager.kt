@@ -22,9 +22,24 @@ class HotelReservationManager(private val hotel: Hotel) {
             "2" -> hotel.showReservations()
             "3" -> hotel.showSortedReservations()
             "4" -> throw Exception()
+            "5" -> getDepositRecordByName()
             "6" -> modifyReservationByName()
         }
     }
+
+    private fun getDepositRecordByName(){
+        println("조회하실 사용자 이름을 입력하세요")
+        val name = readln()
+        val customer : Customer
+        try{
+            customer = hotel.getCustomerWithException(name)
+            customer.showDepositRecord()
+        }catch (e: Exception){
+            println("등록된 고객이 아닙니다.")
+        }
+
+    }
+
     private fun modifyReservationByName(){
         println("조회하실 사용자 이름을 입력하세요")
         val name = readln()
@@ -68,7 +83,8 @@ class HotelReservationManager(private val hotel: Hotel) {
                 printDateIsNotAvailable()
                 continue
             }
-            hotel.book(Reservation(name,roomNumber,checkInDate,checkOutDate))
+            val customer = hotel.getCustomer(name)
+            hotel.book(Reservation(customer,roomNumber,checkInDate,checkOutDate,100000))
             println("예약 변경이 완료되었습니다.")
             return
         }
@@ -98,7 +114,8 @@ class HotelReservationManager(private val hotel: Hotel) {
                 printDateIsNotAvailable()
                 continue
             }
-            return Reservation(name,roomNumber,checkInDate,checkOutDate)
+            val customer = hotel.getCustomer(name)
+            return Reservation(customer,roomNumber,checkInDate,checkOutDate,100000)
         }
     }
 

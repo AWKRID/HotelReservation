@@ -2,11 +2,21 @@ package org.example
 
 class Hotel(private val name: String) {
     private var reservationList = mutableListOf<Reservation>()
+    private var customerList = mutableListOf<Customer>()
     fun getName(): String {
         return name
     }
-
+    fun getCustomer(name: String) : Customer{
+        val filteredCustomerList = customerList.filter { it.getName() == name }
+        if (filteredCustomerList.isNotEmpty()){
+            return filteredCustomerList.first()
+        }
+        val newCustomer = Customer(name)
+        customerList.add(newCustomer)
+        return newCustomer
+    }
     fun book(reservation: Reservation) {
+        reservation.getCustomer().book(reservation.getDeposit())
         reservationList.add(reservation)
     }
 
@@ -27,7 +37,7 @@ class Hotel(private val name: String) {
     }
 
     fun showReservationByName(name: String): List<Reservation> {
-        val filteredReservationList = reservationList.filter { it.getName() == name }.toList()
+        val filteredReservationList = reservationList.filter { it.getCustomer().getName() == name }.toList()
         if (filteredReservationList.isEmpty()) throw Exception()
         println("$name 님이 예약한 목록입니다.")
         for (idx in filteredReservationList.indices) {
@@ -35,6 +45,14 @@ class Hotel(private val name: String) {
             filteredReservationList[idx].showInfo()
         }
         return filteredReservationList
+    }
+    fun getCustomerWithException(name : String) : Customer {
+        if(isCustomer(name)) throw Exception()
+        return getCustomer(name)
+    }
+
+    private fun isCustomer(name : String) : Boolean{
+        return customerList.none {it.getName() == name}
     }
 
 
@@ -52,6 +70,7 @@ class Hotel(private val name: String) {
     }
 
     fun cancelReservation(reservation: Reservation) {
+        reservation.getCustomer().getRefund(reservation.getDeposit())
         reservationList.remove(reservation)
     }
 
