@@ -22,9 +22,57 @@ class HotelReservationManager(private val hotel: Hotel) {
             "2" -> hotel.showReservations()
             "3" -> hotel.showSortedReservations()
             "4" -> throw Exception()
+            "6" -> modifyReservationByName()
         }
     }
-
+    private fun modifyReservationByName(){
+        println("조회하실 사용자 이름을 입력하세요")
+        val name = readln()
+        val reservationList : List<Reservation>
+        val reservationNumber : Int
+        val selectedReservation : Reservation
+        try{
+            reservationList = hotel.showReservationByName(name)
+        }catch(e:Exception){
+            println("사용자 이름으로 예약된 내역을 찾을 수 없습니다.")
+            return
+        }
+        println("변경을 원하시는 예약 번호를 입력하세요.")
+        try{
+            reservationNumber = readln().toInt()
+            selectedReservation = reservationList[reservationNumber-1]
+        }catch(e:Exception){
+            println("잘못된 입력입니다. 초기화면으로 돌아갑니다.")
+            return
+        }
+        println("해당 예약을 어떻게 하시겠어요? 1. 변경, 2. 취소 ")
+        println("메인메뉴로 돌아가고 싶으면 이외의 키를 눌러주세요.")
+        val userChoice = readln()
+        when(userChoice) {
+            "1" -> modifyReservation(name, selectedReservation)
+            "2" -> cancelReservation(selectedReservation)
+            else -> return
+        }
+    }
+    private fun cancelReservation(reservation: Reservation){
+        hotel.cancelReservation(reservation)
+        println("예약이 취소되었습니다.")
+    }
+    private fun modifyReservation(name : String, reservation: Reservation){
+        hotel.cancelReservation(reservation)
+        while(true){
+            val roomNumber = getRoomNumber()
+            val checkInDate = getCheckInDate()
+            val checkOutDate = getCheckOutDate(checkInDate)
+            if(!hotel.isAvailable(roomNumber, checkInDate, checkOutDate)){
+                printDateIsNotAvailable()
+                continue
+            }
+            hotel.book(Reservation(name,roomNumber,checkInDate,checkOutDate))
+            println("예약 변경이 완료되었습니다.")
+            return
+        }
+    }
 
     private fun makeReservation() {
         val reservation = getReservationInfo()
@@ -46,7 +94,7 @@ class HotelReservationManager(private val hotel: Hotel) {
             val roomNumber = getRoomNumber()
             val checkInDate = getCheckInDate()
             val checkOutDate = getCheckOutDate(checkInDate)
-            if(!hotel.isAvailabile(roomNumber, checkInDate, checkOutDate)){
+            if(!hotel.isAvailable(roomNumber, checkInDate, checkOutDate)){
                 printDateIsNotAvailable()
                 continue
             }

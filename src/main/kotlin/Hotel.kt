@@ -1,7 +1,5 @@
 package org.example
 
-import java.time.LocalDate
-
 class Hotel(private val name: String) {
     private var reservationList = mutableListOf<Reservation>()
     fun getName(): String {
@@ -28,19 +26,34 @@ class Hotel(private val name: String) {
         }
     }
 
+    fun showReservationByName(name: String): List<Reservation> {
+        val filteredReservationList = reservationList.filter { it.getName() == name }.toList()
+        if (filteredReservationList.isEmpty()) throw Exception()
+        println("$name 님이 예약한 목록입니다.")
+        for (idx in filteredReservationList.indices) {
+            print("${idx + 1}. ")
+            filteredReservationList[idx].showInfo()
+        }
+        return filteredReservationList
+    }
 
-    fun isAvailabile(roomNumber: Int, checkInDate: String, checkOutDate: String): Boolean {
+
+    fun isAvailable(roomNumber: Int, checkInDate: String, checkOutDate: String): Boolean {
         val filteredReservationList = reservationList.filter {
-            it.getRoomNumber() == roomNumber && (isDateBetweenTwoDates(checkInDate, it.getCheckInDate(),it.getCheckOutDate()) ||
-                    isDateBetweenTwoDates(checkOutDate, it.getCheckInDate(),it.getCheckOutDate()))
+            it.getRoomNumber() == roomNumber && (Utils.isDateBetweenTwoDates(
+                checkInDate,
+                it.getCheckInDate(),
+                it.getCheckOutDate()
+            ) ||
+                    Utils.isDateBetweenTwoDates(checkOutDate, it.getCheckInDate(), it.getCheckOutDate()))
 
         }
         return filteredReservationList.isEmpty()
     }
 
-    private fun isDateBetweenTwoDates(date : String, startDate: String, endDate: String): Boolean {
-        return LocalDate.parse(date).isAfter(LocalDate.parse(startDate).minusDays(1)) &&
-                LocalDate.parse(date).isBefore(LocalDate.parse(endDate))
+    fun cancelReservation(reservation: Reservation) {
+        reservationList.remove(reservation)
     }
+
 
 }

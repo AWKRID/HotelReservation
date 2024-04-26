@@ -20,4 +20,8 @@ class Reservation(
     fun getRoomNumber(): Int {
         return roomNumber
     }
+
+    fun getName(): String {
+        return name
+    }
 }

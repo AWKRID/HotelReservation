@@ -19,6 +19,10 @@ class Utils {
         fun isValidCheckInOutDates(checkInDateStr : String, checkOutDateStr : String) : Boolean{
             return LocalDate.parse(checkOutDateStr).isAfter(LocalDate.parse(checkInDateStr))
         }
+        fun isDateBetweenTwoDates(date : String, startDate: String, endDate: String): Boolean {
+            return LocalDate.parse(date).isAfter(LocalDate.parse(startDate).minusDays(1)) &&
+                    LocalDate.parse(date).isBefore(LocalDate.parse(endDate))
+        }
     }
 
 }
